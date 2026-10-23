@@ -1,0 +1,66 @@
+{
+  "EXP-101": {
+    "nombre": "Thani",
+    "asignaturas": [
+      {
+        "nombre": "Lengua",
+        "calificacion": 10.0
+      },
+      {
+        "nombre": "Mates",
+        "calificacion": 10.0
+      },
+      {
+        "nombre": "Acceso a Datos",
+        "calificacion": 9.5
+      },
+      {
+        "nombre": "Acceso a Datos",
+        "calificacion": 9.5
+      },
+      {
+        "nombre": "Acceso a Datos",
+        "calificacion": 9.5
+      }
+    ]
+  },
+  "EXP-102": {
+    "nombre": "Jaimito",
+    "asignaturas": [
+      {
+        "nombre": "Lengua",
+        "calificacion": 5.0
+      },
+      {
+        "nombre": "Mates",
+        "calificacion": 6.0
+      }
+    ]
+  },
+  "EXP-103": {
+    "nombre": "Alice",
+    "asignaturas": [
+      {
+        "nombre": "Lengua",
+        "calificacion": 7.0
+      },
+      {
+        "nombre": "Mates",
+        "calificacion": 7.0
+      }
+    ]
+  },
+  "EXP-104": {
+    "nombre": "Pepito",
+    "asignaturas": [
+      {
+        "nombre": "Lengua",
+        "calificacion": 7.8
+      },
+      {
+        "nombre": "Mates",
+        "calificacion": 5.0
+      }
+    ]
+  }
+}

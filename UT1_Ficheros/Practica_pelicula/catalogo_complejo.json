@@ -1,0 +1,28 @@
+[
+  {
+    "id": 1,
+    "nombre": "El Origen del Tiempo",
+    "duracionMinutos": 148,
+    "director": {
+      "nombre": "Christopher Vega",
+      "nacionalidad": "Reino Unido"
+    },
+    "reparto": [
+      "Leonardo Marín",
+      "Elena Page"
+    ]
+  },
+  {
+    "id": 2,
+    "nombre": "La Ciudad Sumergida",
+    "duracionMinutos": 122,
+    "director": {
+      "nombre": "Marta Solís",
+      "nacionalidad": "España"
+    },
+    "reparto": [
+      "Carlos Duarte",
+      "Lucía Ferrer"
+    ]
+  }
+]
