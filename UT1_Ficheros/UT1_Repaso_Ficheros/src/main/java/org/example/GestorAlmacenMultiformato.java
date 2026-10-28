@@ -1,5 +1,8 @@
 package org.example;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,9 +11,18 @@ import java.util.List;
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class GestorAlmacenMultiformato {
     public static String RUTACSV="importacion_productos.csv";
+    public static String RUTADAT="inventario.dat";
+    public static String RUTAJSON="backup_inventario.json";
+
+    public static final int LONG_NOMBRE = 30;
+    public static final int TAM_REGISTRO = 4 + (LONG_NOMBRE * 2) + 8 + 4;
+    public static final int COMIENZO_STOCK = 4 + (LONG_NOMBRE * 2) + 8;
 
     public static void main(String[] args) {
         prepararEntorno();
+        List<Producto> productos = leerCSV(RUTACSV);
+        escribirRandomAccess(RUTADAT, productos);
+        exportarJSON(RUTAJSON, productos);
 
     }
 
@@ -46,26 +58,16 @@ public class GestorAlmacenMultiformato {
     }
     public static List<Producto> leerCSV(String rutaCSV) {
         ArrayList<Producto> productos = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(RUTACSV))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(rutaCSV))) {
             String linea;
             while ((linea = br.readLine()) != null) {
                 String[] lineaSplit = linea.split(";", -1);
-                /*
-                 if (i == 1) {
-                                lineaBuena[i] = linea2[i];
-                            } else if (linea2[i].contains(".")) {
-                                lineaBuena[i] = Double.parseDouble(linea2[i]);
-                            } else {
-                                lineaBuena[i] = Integer.parseInt(linea2[i]);
-                            }
-                 */
                 try {
-                    if(lineaSplit[0].equals("1")){
-                        lineaSplit[0] = String.valueOf(Integer.parseInt(lineaSplit[0]));
-                    } else if(){
-
-                    }
-
+                    int id = Integer.parseInt(lineaSplit[0].trim());
+                    String nombre = lineaSplit[1].trim();
+                    double precio = Double.parseDouble(lineaSplit[2].trim());
+                    int stock = Integer.parseInt(lineaSplit[3].trim());
+                    productos.add(new Producto(id, nombre, precio, stock));
 
                 } catch (Exception e) {
                     System.out.println("ERROR: " + e.getMessage());
@@ -74,6 +76,43 @@ public class GestorAlmacenMultiformato {
         } catch (IOException e) {
             System.out.println("Error al leer el fichero: " + e.getMessage());
         }
+        return productos;
     }
 
+    public static void escribirRandomAccess(String rutaDat, List<Producto> productos){
+        try(var raf = new RandomAccessFile(rutaDat, "rw")){
+            raf.setLength(0);
+            for(Producto p : productos){
+                raf.writeInt(p.getId());
+
+                StringBuilder sb = new StringBuilder(p.getNombre());
+                sb.setLength(LONG_NOMBRE);
+                raf.writeChars(sb.toString());
+
+                raf.writeDouble(p.getPrecio());
+                raf.writeInt(p.getStock());
+            }
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static void actualizarStockRandomAccess(String rutaDat, int posicion, int nuevoStock){
+        try (RandomAccessFile raf = new RandomAccessFile(RUTADAT, "rw")) {
+            long byteDondeEscribir  = (long) posicion * TAM_REGISTRO + COMIENZO_STOCK;
+            raf.seek(byteDondeEscribir );
+            raf.writeInt(nuevoStock);
+        } catch (IOException e) {
+            System.out.println("Error al actualizar el stock: " + e.getMessage());
+        }
+   }
+
+    public static void exportarJSON(String rutaJSON, List<Producto> productos){
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(rutaJSON))) {
+            gson.toJson(productos, bw);
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 }
