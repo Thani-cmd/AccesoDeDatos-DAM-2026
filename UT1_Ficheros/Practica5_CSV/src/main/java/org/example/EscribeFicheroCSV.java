@@ -15,7 +15,6 @@ public class EscribeFicheroCSV {
             productos.add(new Producto(null, "Potaje", 2.3));
             productos.add(new Producto(5, "Arroz", null));
 
-
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("productos.csv"))) {
             for(Producto p : productos){
                 String linea = "";
