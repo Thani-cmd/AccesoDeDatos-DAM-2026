@@ -10,9 +10,10 @@ import java.util.List;
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class GestorAlmacenMultiformato {
-    public static String RUTACSV="importacion_productos.csv";
-    public static String RUTADAT="inventario.dat";
-    public static String RUTAJSON="backup_inventario.json";
+    public static final String CARPETA = "./datos_almacen";
+    public static final String RUTACSV = CARPETA + "/importacion_productos.csv";
+    public static final String RUTADAT = CARPETA + "/inventario.dat";
+    public static final String RUTAJSON = CARPETA + "/backup_inventario.json";
 
     public static final int LONG_NOMBRE = 30;
     public static final int TAM_REGISTRO = 4 + (LONG_NOMBRE * 2) + 8 + 4;
@@ -22,28 +23,28 @@ public class GestorAlmacenMultiformato {
         prepararEntorno();
         List<Producto> productos = leerCSV(RUTACSV);
         escribirRandomAccess(RUTADAT, productos);
+        actualizarStockRandomAccess(RUTADAT, 1, 99);
         exportarJSON(RUTAJSON, productos);
-
     }
 
-    public static void prepararEntorno(){
-        File carpeta = new File("./datos_almacen/.");
-        if(!carpeta.exists()){
+    public static void prepararEntorno() {
+        File carpeta = new File(CARPETA);
+        if (!carpeta.exists()) {
             boolean creado = carpeta.mkdirs();
-            if(creado){
+            if (creado) {
                 System.out.println("Fichero creado");
-            }else{
+            } else {
                 System.out.println("No se pudo crear");
             }
         }
 
         File fichero = new File(RUTACSV);
-        if(!fichero.exists()){
+        if (!fichero.exists()) {
             ArrayList<Producto> productos = new ArrayList<>();
             productos.add(new Producto(1, "Almeja", 5.0, 10));
             productos.add(new Producto(2, "Mesa", 15.0, 5));
             try (BufferedWriter bw = new BufferedWriter(new FileWriter(RUTACSV))) {
-                for(Producto p : productos){
+                for (Producto p : productos) {
                     String linea = p.getId() + ";"
                             + p.getNombre() + ";"
                             + p.getPrecio() + ";"
@@ -56,6 +57,7 @@ public class GestorAlmacenMultiformato {
             }
         }
     }
+
     public static List<Producto> leerCSV(String rutaCSV) {
         ArrayList<Producto> productos = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(rutaCSV))) {
@@ -79,10 +81,10 @@ public class GestorAlmacenMultiformato {
         return productos;
     }
 
-    public static void escribirRandomAccess(String rutaDat, List<Producto> productos){
-        try(var raf = new RandomAccessFile(rutaDat, "rw")){
+    public static void escribirRandomAccess(String rutaDat, List<Producto> productos) {
+        try (var raf = new RandomAccessFile(rutaDat, "rw")) {
             raf.setLength(0);
-            for(Producto p : productos){
+            for (Producto p : productos) {
                 raf.writeInt(p.getId());
 
                 StringBuilder sb = new StringBuilder(p.getNombre());
@@ -97,17 +99,17 @@ public class GestorAlmacenMultiformato {
         }
     }
 
-    public static void actualizarStockRandomAccess(String rutaDat, int posicion, int nuevoStock){
-        try (RandomAccessFile raf = new RandomAccessFile(RUTADAT, "rw")) {
-            long byteDondeEscribir  = (long) posicion * TAM_REGISTRO + COMIENZO_STOCK;
-            raf.seek(byteDondeEscribir );
+    public static void actualizarStockRandomAccess(String rutaDat, int posicion, int nuevoStock) {
+        try (RandomAccessFile raf = new RandomAccessFile(rutaDat, "rw")) {
+            long byteDondeEscribir = (long) posicion * TAM_REGISTRO + COMIENZO_STOCK;
+            raf.seek(byteDondeEscribir);
             raf.writeInt(nuevoStock);
         } catch (IOException e) {
             System.out.println("Error al actualizar el stock: " + e.getMessage());
         }
-   }
+    }
 
-    public static void exportarJSON(String rutaJSON, List<Producto> productos){
+    public static void exportarJSON(String rutaJSON, List<Producto> productos) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(rutaJSON))) {
             gson.toJson(productos, bw);
